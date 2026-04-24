@@ -1,0 +1,16 @@
+{
+  "name": "career-ops-job-board-api",
+  "version": "1.0.0",
+  "description": "Cloud Run service: fetch job APIs → score with Gemini → store in BigQuery",
+  "type": "module",
+  "main": "src/index.mjs",
+  "scripts": {
+    "start": "node src/index.mjs",
+    "dev":   "node --watch src/index.mjs"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery":  "^7.3.0",
+    "@google/generative-ai":   "^0.21.0",
+    "dotenv":                  "^16.4.5"
+  }
+}

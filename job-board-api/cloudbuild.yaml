@@ -1,0 +1,52 @@
+# Cloud Build — build & deploy career-ops job-board-api to Cloud Run
+#
+# Trigger this manually or connect to a GitHub branch for auto-deploy.
+#
+# Required substitutions (set in Cloud Build trigger or via --substitutions):
+#   _SERVICE_NAME   — Cloud Run service name (default: career-ops-job-board)
+#   _REGION         — GCP region            (default: us-central1)
+#   _BQ_PROJECT     — GCP project for BigQuery (usually same as $PROJECT_ID)
+
+substitutions:
+  _SERVICE_NAME: career-ops-job-board
+  _REGION:       us-central1
+  _BQ_PROJECT:   ${PROJECT_ID}
+
+steps:
+  # 1. Build the container image
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA
+      - -t
+      - gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest
+      - .
+
+  # 2. Push to Container Registry
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - --all-tags
+      - gcr.io/$PROJECT_ID/$_SERVICE_NAME
+
+  # 3. Deploy to Cloud Run
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - $_SERVICE_NAME
+      - --image=gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA
+      - --region=$_REGION
+      - --platform=managed
+      - --no-allow-unauthenticated   # Cloud Scheduler uses OIDC token
+      - --memory=512Mi
+      - --cpu=1
+      - --timeout=900                # 15 min max — scoring 50 jobs ~5 min
+      - --concurrency=1              # one pipeline run at a time
+      - --min-instances=0            # scale to zero when idle (free tier)
+      - --set-env-vars=BQ_PROJECT=$_BQ_PROJECT
+
+images:
+  - gcr.io/$PROJECT_ID/$_SERVICE_NAME
