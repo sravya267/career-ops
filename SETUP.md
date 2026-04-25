@@ -61,13 +61,26 @@
 - Click **Continue** if it asks to authorize Cloud Shell
 - Wait ~15 seconds for it to initialize
 
-### Step 5 — Run the setup (one command)
+### Step 5 — Run the setup (3 commands, one at a time)
 
 - Click inside the Cloud Shell terminal
-- Copy and paste this command, then press **Enter**:
+- Run each command below by pasting it and pressing **Enter** — wait for each one to finish before running the next
 
+**Command 1 — Download the project files:**
 ```
-git clone https://github.com/sravya267/career-ops.git && cd career-ops/job-board-api && bash setup-gcp.sh
+git clone -b claude/job-board-api-integration-gt6Qy https://github.com/sravya267/career-ops.git
+```
+> You'll see lines scrolling — wait until you get the `$` prompt back before continuing.  
+> If you see "destination path already exists", run `rm -rf career-ops` first, then retry.
+
+**Command 2 — Go into the project folder:**
+```
+cd career-ops/job-board-api
+```
+
+**Command 3 — Run the setup script:**
+```
+bash setup-cloudshell.sh
 ```
 
 ### Step 6 — Answer the 3 prompts
@@ -188,7 +201,7 @@ The pipeline runs automatically every 6 hours — you don't need to do anything.
 → Make sure your `career-ops` project is selected at the top of the Cloud Console
 
 **"Billing not enabled" error**
-→ Complete Step 2 and re-run `bash setup-gcp.sh` in Cloud Shell (it's safe to re-run)
+→ Complete Step 2 and re-run `bash setup-cloudshell.sh` in Cloud Shell (it's safe to re-run)
 
 **Dashboard shows no jobs**
 → The first pipeline run takes 10-15 min. Check Cloud Run logs:  
