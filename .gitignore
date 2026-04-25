@@ -25,6 +25,11 @@ modes/_profile.md
 
 # Secrets (never commit — use .env.example as template)
 .env
+job-board-api/.env
+job-board-api/candidate-profile.txt
+
+# Apps Script — clasp project binding (contains script ID, user-specific)
+apps-script/.clasp.json
 
 # Generated
 .resolved-prompt-*

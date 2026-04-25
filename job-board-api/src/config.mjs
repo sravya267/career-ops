@@ -1,0 +1,32 @@
+import { readFileSync, existsSync } from 'fs';
+
+export const config = {
+  port:             parseInt(process.env.PORT            || '8080'),
+  geminiKey:        process.env.GEMINI_API_KEY           || '',
+  geminiModel:      process.env.GEMINI_MODEL             || 'gemini-2.0-flash',
+  bqProject:        process.env.BQ_PROJECT               || '',
+  bqDataset:        process.env.BQ_DATASET               || 'career_ops',
+  bqJobsTable:      process.env.BQ_JOBS_TABLE            || 'jobs',
+  bqScoresTable:    process.env.BQ_SCORES_TABLE          || 'scores',
+  candidateProfile: process.env.CANDIDATE_PROFILE        || '',
+  titleKeywords:    parseCsv(process.env.TITLE_KEYWORDS  || 'engineer,scientist,ai,ml,machine learning,data'),
+  maxJobsPerRun:    parseInt(process.env.MAX_JOBS_PER_RUN || '50'),
+  fetchTimeoutMs:   parseInt(process.env.FETCH_TIMEOUT_MS || '10000'),
+  fetchDescriptions: process.env.FETCH_DESCRIPTIONS === 'true',
+  portals:          loadPortals(),
+};
+
+function parseCsv(str) {
+  return str.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+}
+
+function loadPortals() {
+  if (process.env.PORTALS_JSON) {
+    try { return JSON.parse(process.env.PORTALS_JSON); } catch { /* fall through */ }
+  }
+  const path = process.env.PORTALS_FILE || new URL('../portals.json', import.meta.url).pathname;
+  if (existsSync(path)) {
+    return JSON.parse(readFileSync(path, 'utf-8'));
+  }
+  return [];
+}
