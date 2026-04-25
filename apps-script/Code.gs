@@ -66,12 +66,13 @@ function getTopJobs() {
   var sql = [
     'SELECT',
     '  j.id, j.url, j.company, j.title, j.location,',
-    '  s.score, s.remote, s.seniority, s.missing_skills,',
-    '  s.salary_mentioned, s.summary',
+    '  s.score, s.remote, s.wlb_signals, s.ai_proof, s.stability,',
+    '  s.seniority, s.missing_skills, s.summary',
     'FROM `' + CONFIG.bqProject + '.' + CONFIG.bqDataset + '.' + CONFIG.bqJobsTable + '` j',
     'JOIN `' + CONFIG.bqProject + '.' + CONFIG.bqDataset + '.' + CONFIG.bqScoresTable + '` s',
     '  ON j.id = s.job_id',
     'WHERE s.score >= ' + CONFIG.minScore,
+    '  AND s.remote IN ("yes", "unclear")',  // filter out non-remote
     'ORDER BY s.score DESC',
     'LIMIT ' + CONFIG.maxJobs,
   ].join('\n');
@@ -81,8 +82,8 @@ function getTopJobs() {
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 
-var HEADERS = ['#', 'Score', 'Company', 'Role', 'Location', 'Remote', 'Seniority',
-               'Missing Skills', 'Summary', 'Apply', 'CV', 'Status', 'Updated'];
+var HEADERS = ['#', 'Score', 'Company', 'Role', 'Remote', 'WLB Signals', 'AI-Proof', 'Stability',
+               'Seniority', 'Missing Skills', 'Summary', 'Apply', 'CV', 'Status'];
 
 function updateDashboard() {
   var ss    = SpreadsheetApp.getActiveSpreadsheet();

@@ -25,9 +25,12 @@ const JOBS_SCHEMA = [
 const SCORES_SCHEMA = [
   { name: 'job_id',           type: 'STRING',  mode: 'REQUIRED' },
   { name: 'score',            type: 'INTEGER' },
-  { name: 'missing_skills',   type: 'STRING'  },  // comma-separated for simplicity
+  { name: 'missing_skills',   type: 'STRING'  },
   { name: 'salary_mentioned', type: 'BOOLEAN' },
   { name: 'remote',           type: 'STRING'  },
+  { name: 'wlb_signals',      type: 'STRING'  },
+  { name: 'ai_proof',         type: 'BOOLEAN' },
+  { name: 'stability',        type: 'STRING'  },
   { name: 'seniority',        type: 'STRING'  },
   { name: 'summary',          type: 'STRING'  },
   { name: 'scored_at',        type: 'TIMESTAMP' },

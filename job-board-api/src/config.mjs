@@ -9,7 +9,7 @@ export const config = {
   bqJobsTable:      process.env.BQ_JOBS_TABLE            || 'jobs',
   bqScoresTable:    process.env.BQ_SCORES_TABLE          || 'scores',
   candidateProfile: process.env.CANDIDATE_PROFILE        || '',
-  titleKeywords:    parseCsv(process.env.TITLE_KEYWORDS  || 'engineer,scientist,ai,ml,machine learning,data'),
+  titleKeywords:    parseCsv(process.env.TITLE_KEYWORDS  || 'data engineer,cloud engineer,ml engineer,ai engineer,analytics engineer,data platform,analytics consultant,machine learning,data science'),
   maxJobsPerRun:    parseInt(process.env.MAX_JOBS_PER_RUN || '50'),
   fetchTimeoutMs:   parseInt(process.env.FETCH_TIMEOUT_MS || '10000'),
   fetchDescriptions: process.env.FETCH_DESCRIPTIONS === 'true',
