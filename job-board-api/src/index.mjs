@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { createServer } from 'http';
 import { config }       from './config.mjs';
-import { runPipeline }  from './pipeline.mjs';
+import { runPipeline, runCvBackfill } from './pipeline.mjs';
 
 // Track whether a pipeline run is in progress to prevent overlapping runs.
 let running = false;
@@ -29,6 +29,23 @@ const server = createServer(async (req, res) => {
     runPipeline()
       .then(r  => console.log('[server] pipeline complete:', JSON.stringify(r)))
       .catch(e => console.error('[server] pipeline error:', e.message))
+      .finally(() => { running = false; });
+    return;
+  }
+
+  // On-demand CV backfill — generates CVs for all scored jobs missing one
+  if (url === '/run-cvs' && method === 'POST') {
+    if (running) {
+      res.writeHead(409, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'busy', message: 'pipeline already running' }));
+      return;
+    }
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'started', ts: new Date().toISOString() }));
+    running = true;
+    runCvBackfill()
+      .then(r  => console.log('[server] cv backfill complete:', JSON.stringify(r)))
+      .catch(e => console.error('[server] cv backfill error:', e.message))
       .finally(() => { running = false; });
     return;
   }

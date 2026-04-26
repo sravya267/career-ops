@@ -33,6 +33,7 @@ const SCORES_SCHEMA = [
   { name: 'stability',        type: 'STRING'  },
   { name: 'seniority',        type: 'STRING'  },
   { name: 'summary',          type: 'STRING'  },
+  { name: 'cv_url',           type: 'STRING'  },
   { name: 'scored_at',        type: 'TIMESTAMP' },
 ];
 
@@ -46,6 +47,7 @@ export async function ensureSchema() {
   }
   await ensureTable(config.bqJobsTable,   JOBS_SCHEMA);
   await ensureTable(config.bqScoresTable, SCORES_SCHEMA);
+  await addColumnIfMissing(config.bqScoresTable, 'cv_url', 'STRING');
 }
 
 async function ensureTable(name, schema) {
@@ -54,6 +56,23 @@ async function ensureTable(name, schema) {
   if (!exists) {
     await table.create({ schema });
     console.log(`Created table ${config.bqDataset}.${name}`);
+  }
+}
+
+// Adds a NULLABLE column to an existing table without recreating it.
+async function addColumnIfMissing(tableName, columnName, columnType) {
+  const table = dataset().table(tableName);
+  const [exists] = await table.exists();
+  if (!exists) return;
+  try {
+    const [meta] = await table.getMetadata();
+    if (!meta.schema.fields.some(f => f.name === columnName)) {
+      meta.schema.fields.push({ name: columnName, type: columnType, mode: 'NULLABLE' });
+      await table.setMetadata(meta);
+      console.log(`Migrated ${tableName}: added column ${columnName}`);
+    }
+  } catch (err) {
+    console.warn(`Migration warning (${columnName}):`, err.message);
   }
 }
 
@@ -87,17 +106,17 @@ export async function getUnscoredJobs(limit = config.maxJobsPerRun) {
   return rows;
 }
 
-export async function getTopJobs(minScore = 60, limit = 100) {
+// Returns scored jobs that still need a CV (score >= threshold, no cv_url yet).
+export async function getJobsNeedingCv(minScore = config.cvMinScore, limit = config.cvBatchSize) {
   const [rows] = await bq().query({
     query: `
-      SELECT
-        j.id, j.url, j.company, j.title, j.location,
-        s.score, s.remote, s.seniority, s.missing_skills,
-        s.salary_mentioned, s.summary, s.scored_at
+      SELECT j.id, j.url, j.company, j.title, j.location,
+             s.score, s.remote, s.seniority, s.missing_skills
       FROM \`${config.bqProject}.${config.bqDataset}.${config.bqJobsTable}\` j
-      JOIN \`${config.bqProject}.${config.bqDataset}.${config.bqScoresTable}\` s
-        ON j.id = s.job_id
+      JOIN  \`${config.bqProject}.${config.bqDataset}.${config.bqScoresTable}\` s
+        ON  j.id = s.job_id
       WHERE s.score >= ${minScore}
+        AND (s.cv_url IS NULL OR s.cv_url = '')
       ORDER BY s.score DESC
       LIMIT ${limit}
     `,
@@ -118,4 +137,27 @@ export async function insertScores(scores) {
   if (!scores.length) return;
   await dataset().table(config.bqScoresTable).insert(scores);
   console.log(`Inserted ${scores.length} scores into BigQuery`);
+}
+
+// Updates cv_url for previously-scored rows using DML (safe for non-streaming rows).
+export async function updateCvUrls(cvResults) {
+  const valid = cvResults.filter(r => r.cv_url);
+  if (!valid.length) return;
+
+  for (const { job_id, cv_url } of valid) {
+    try {
+      await bq().query({
+        query: `
+          UPDATE \`${config.bqProject}.${config.bqDataset}.${config.bqScoresTable}\`
+          SET    cv_url = @cv_url
+          WHERE  job_id = @job_id
+        `,
+        params:      { cv_url, job_id },
+        useLegacySql: false,
+      });
+    } catch (err) {
+      console.error(`  [cv] updateCvUrl failed for ${job_id}: ${err.message}`);
+    }
+  }
+  console.log(`Updated cv_url for ${valid.length} rows`);
 }

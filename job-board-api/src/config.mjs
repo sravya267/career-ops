@@ -14,6 +14,13 @@ export const config = {
   fetchTimeoutMs:   parseInt(process.env.FETCH_TIMEOUT_MS || '10000'),
   fetchDescriptions: process.env.FETCH_DESCRIPTIONS === 'true',
   portals:          loadPortals(),
+
+  // CV generation (optional — requires CV_TEMPLATE_DOC_ID to be set)
+  generateCvs:     process.env.GENERATE_CVS === 'true',
+  cvMinScore:      parseInt(process.env.CV_MIN_SCORE      || '65'),
+  cvTemplateDocId: process.env.CV_TEMPLATE_DOC_ID         || '',
+  cvFolderId:      process.env.CV_FOLDER_ID               || '',
+  cvBatchSize:     parseInt(process.env.CV_BATCH_SIZE     || '10'),
 };
 
 function parseCsv(str) {

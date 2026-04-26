@@ -167,6 +167,8 @@ gcloud services enable \
   cloudscheduler.googleapis.com \
   secretmanager.googleapis.com \
   artifactregistry.googleapis.com \
+  docs.googleapis.com \
+  drive.googleapis.com \
   --project="$PROJECT_ID" --quiet
 
 ok "All APIs enabled"
