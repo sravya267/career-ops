@@ -10,22 +10,22 @@
 // ── Config ────────────────────────────────────────────────────────────────────
 
 var CONFIG = {
-  minScore:       65,    // only generate CVs for jobs at or above this score
-  cvFolderId:     '',    // Drive folder ID for CVs ('' = creates "career-ops CVs" folder)
-  cvTemplateName: 'career-ops CV Template',
+  minScore:        65,
+  cvFolderId:      '',
+  cvTemplateName:  'career-ops CV Template',
+  dataSourceSheet: 'jobs',           // name of the BigQuery connector sheet tab
+  dashboardSheet:  'Jobs Dashboard', // regular sheet the script reads/writes
 
-  // Column positions in your sheet (1-based).
-  // Match these to the order in your BigQuery connector query.
+  // Column positions as they come from the BigQuery connector (1-based)
   cols: {
-    company:  1,   // A
-    role:     2,   // B
-    url:      3,   // C
-    location: 4,   // D
-    score:    5,   // E
-    remote:   6,   // F
-    seniority: 10, // J
-    missing:  11,  // K
-    cvLink:   13,  // M  ← where the script writes the CV link
+    company:   1,   // A
+    role:      2,   // B
+    url:       3,   // C
+    location:  4,   // D
+    score:     5,   // E
+    remote:    6,   // F
+    seniority: 10,  // J
+    missing:   11,  // K
   },
 };
 
@@ -34,42 +34,94 @@ var CONFIG = {
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Career Ops')
-    .addItem('⚡ Generate CV for selected row', 'generateCVForSelectedRow')
-    .addItem('⚡ Generate CVs for all rows (score ≥ ' + CONFIG.minScore + ')', 'generateAllCVs')
+    .addItem('↻  Copy data to dashboard',       'copyToDashboard')
+    .addItem('⚡ Generate CV for selected row',  'generateCVForSelectedRow')
+    .addItem('⚡ Generate all CVs (score ≥ ' + CONFIG.minScore + ')', 'generateAllCVs')
     .addToUi();
+}
+
+// Copies data from the locked DataSource sheet into a regular editable sheet.
+function copyToDashboard() {
+  var ss  = SpreadsheetApp.getActiveSpreadsheet();
+  var src = ss.getSheetByName(CONFIG.dataSourceSheet);
+  if (!src) {
+    SpreadsheetApp.getUi().alert(
+      'DataSource sheet "' + CONFIG.dataSourceSheet + '" not found.\n' +
+      'Check that CONFIG.dataSourceSheet matches your BigQuery connector tab name.'
+    );
+    return;
+  }
+
+  var dst = ss.getSheetByName(CONFIG.dashboardSheet) || ss.insertSheet(CONFIG.dashboardSheet);
+  dst.clearContents();
+
+  var values = src.getDataRange().getValues();
+  dst.getRange(1, 1, values.length, values[0].length).setValues(values);
+
+  // Add CV link column header
+  var cvCol = values[0].length + 1;
+  dst.getRange(1, cvCol).setValue('CV Link');
+
+  // Style header row
+  dst.getRange(1, 1, 1, cvCol).setFontWeight('bold').setBackground('#1a1a2e').setFontColor('#ffffff');
+  dst.setFrozenRows(1);
+
+  SpreadsheetApp.getUi().alert('Copied ' + (values.length - 1) + ' rows to "' + CONFIG.dashboardSheet + '".');
 }
 
 // ── CV Generation ─────────────────────────────────────────────────────────────
 
 function generateCVForSelectedRow() {
-  var sheet = SpreadsheetApp.getActiveSheet();
-  var row   = sheet.getActiveRange().getRow();
-  if (row < 2) {
-    SpreadsheetApp.getUi().alert('Select a data row first (not the header).');
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(CONFIG.dashboardSheet);
+  if (!sheet) {
+    SpreadsheetApp.getUi().alert('Run "Copy data to dashboard" first.');
     return;
   }
-  var data = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
-  var url  = _generateCV(data);
-  sheet.getRange(row, CONFIG.cols.cvLink).setFormula('=HYPERLINK("' + url + '","CV →")');
-  SpreadsheetApp.getUi().alert('CV created! Check column ' + CONFIG.cols.cvLink + '.');
+
+  // Make sure the user is viewing the dashboard sheet so their row selection is correct
+  if (ss.getActiveSheet().getName() !== CONFIG.dashboardSheet) {
+    ss.setActiveSheet(sheet);
+    SpreadsheetApp.getUi().alert(
+      'Switched to "' + CONFIG.dashboardSheet + '".\n' +
+      'Click on any job row, then run this menu item again.'
+    );
+    return;
+  }
+
+  var row = sheet.getActiveRange().getRow();
+  if (row < 2) {
+    SpreadsheetApp.getUi().alert('Click on a job row (not the header), then try again.');
+    return;
+  }
+
+  var data  = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var cvCol = sheet.getLastColumn(); // CV link goes in the last column
+  var url   = _generateCV(data);
+  sheet.getRange(row, cvCol).setFormula('=HYPERLINK("' + url + '","CV →")');
+  SpreadsheetApp.getUi().alert('CV created!');
 }
 
 function generateAllCVs() {
-  var sheet     = SpreadsheetApp.getActiveSheet();
-  var lastRow   = sheet.getLastRow();
-  if (lastRow < 2) { SpreadsheetApp.getUi().alert('No data rows found.'); return; }
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(CONFIG.dashboardSheet);
+  if (!sheet || sheet.getLastRow() < 2) {
+    SpreadsheetApp.getUi().alert('Run "Copy data to dashboard" first.');
+    return;
+  }
 
-  var allData   = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues();
+  var lastRow   = sheet.getLastRow();
+  var lastCol   = sheet.getLastColumn();
+  var allData   = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
   var generated = 0;
 
   allData.forEach(function(row, i) {
     var score  = parseFloat(row[CONFIG.cols.score - 1]) || 0;
-    var cvLink = row[CONFIG.cols.cvLink - 1];
+    var cvLink = row[lastCol - 1]; // last column = CV link
     if (cvLink || score < CONFIG.minScore) return;
-
     try {
       var url = _generateCV(row);
-      sheet.getRange(i + 2, CONFIG.cols.cvLink).setFormula('=HYPERLINK("' + url + '","CV →")');
+      sheet.getRange(i + 2, lastCol).setFormula('=HYPERLINK("' + url + '","CV →")');
       generated++;
     } catch (e) {
       Logger.log('CV error row ' + (i + 2) + ': ' + e.message);
@@ -83,14 +135,14 @@ function generateAllCVs() {
 function _generateCV(row) {
   var c = CONFIG.cols;
   var job = {
-    company:   String(row[c.company  - 1] || ''),
-    role:      String(row[c.role     - 1] || ''),
-    url:       String(row[c.url      - 1] || ''),
-    location:  String(row[c.location - 1] || 'Remote'),
-    score:     String(row[c.score    - 1] || ''),
-    remote:    String(row[c.remote   - 1] || ''),
-    seniority: String(row[c.seniority- 1] || ''),
-    missing:   String(row[c.missing  - 1] || ''),
+    company:   String(row[c.company   - 1] || ''),
+    role:      String(row[c.role      - 1] || ''),
+    url:       String(row[c.url       - 1] || ''),
+    location:  String(row[c.location  - 1] || 'Remote'),
+    score:     String(row[c.score     - 1] || ''),
+    remote:    String(row[c.remote    - 1] || ''),
+    seniority: String(row[c.seniority - 1] || ''),
+    missing:   String(row[c.missing   - 1] || ''),
   };
 
   var templateFile = _getOrCreateTemplate();
