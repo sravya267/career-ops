@@ -1,81 +1,56 @@
-import { google } from 'googleapis';
+import { readFileSync } from 'fs';
+import { Storage } from '@google-cloud/storage';
+import { fileURLToPath } from 'url';
+import { join, dirname } from 'path';
 import { config } from './config.mjs';
 
-let _authClient;
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const TEMPLATE_PATH = join(__dirname, '../cv-template.html');
 
-async function authClient() {
-  if (!_authClient) {
-    const auth = new google.auth.GoogleAuth({
-      scopes: [
-        'https://www.googleapis.com/auth/drive',
-        'https://www.googleapis.com/auth/documents',
-      ],
-    });
-    _authClient = await auth.getClient();
-  }
-  return _authClient;
+function loadTemplate() {
+  return readFileSync(TEMPLATE_PATH, 'utf-8');
 }
 
-function buildReplaceRequests(job) {
+function fillTemplate(html, job) {
   const date = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  const map = {
-    '{{COMPANY}}':   job.company       || '',
-    '{{ROLE}}':      job.title         || '',
-    '{{DATE}}':      date,
-    '{{LOCATION}}':  job.location      || 'Remote',
-    '{{REMOTE}}':    job.remote        || '',
-    '{{SENIORITY}}': job.seniority     || '',
-    '{{SCORE}}':     String(job.score  || ''),
-    '{{APPLY_URL}}': job.url           || '',
-    '{{MISSING}}':   job.missing_skills
+  return html
+    .replace(/\{\{COMPANY\}\}/g,   job.company       || '')
+    .replace(/\{\{ROLE\}\}/g,      job.title         || '')
+    .replace(/\{\{DATE\}\}/g,      date)
+    .replace(/\{\{LOCATION\}\}/g,  job.location      || 'Remote')
+    .replace(/\{\{REMOTE\}\}/g,    job.remote        || '')
+    .replace(/\{\{SENIORITY\}\}/g, job.seniority     || '')
+    .replace(/\{\{SCORE\}\}/g,     String(job.score  || ''))
+    .replace(/\{\{APPLY_URL\}\}/g, job.url           || '')
+    .replace(/\{\{MISSING\}\}/g,   job.missing_skills
       ? 'Skills to highlight: ' + job.missing_skills
-      : '',
-  };
-  return Object.entries(map).map(([find, replace]) => ({
-    replaceAllText: {
-      containsText: { text: find, matchCase: false },
-      replaceText:  replace,
-    },
-  }));
+      : '');
+}
+
+function safeSlug(str, max = 40) {
+  return (str || '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, max);
 }
 
 export async function generateCV(job) {
-  const client = await authClient();
-  const drive  = google.drive({ version: 'v3', auth: client });
-  const docs   = google.docs({ version: 'v1', auth: client });
+  if (!config.cvBucketName) throw new Error('CV_BUCKET_NAME env var not set');
 
-  const docName = `CV — ${job.company} — ${job.title}`;
+  const html     = fillTemplate(loadTemplate(), job);
+  const storage  = new Storage();
+  const bucket   = storage.bucket(config.cvBucketName);
+  const fileName = `cvs/${safeSlug(job.company)}-${safeSlug(job.title)}.html`;
 
-  // 1. Copy the template into the output folder
-  const { data: copy } = await drive.files.copy({
-    fileId:      config.cvTemplateDocId,
-    requestBody: {
-      name:    docName,
-      ...(config.cvFolderId ? { parents: [config.cvFolderId] } : {}),
-    },
-    fields: 'id',
-  });
-  const docId = copy.id;
-
-  // 2. Fill in job-specific placeholders
-  await docs.documents.batchUpdate({
-    documentId:  docId,
-    requestBody: { requests: buildReplaceRequests(job) },
+  await bucket.file(fileName).save(html, {
+    contentType: 'text/html; charset=utf-8',
+    public: true,
+    metadata: { cacheControl: 'no-cache' },
   });
 
-  // 3. Make the doc public so the export URL is shareable
-  await drive.permissions.create({
-    fileId:      docId,
-    requestBody: { role: 'reader', type: 'anyone' },
-  });
-
-  // Return a direct PDF download URL — works for any public Google Doc
-  return `https://docs.google.com/document/d/${docId}/export?format=pdf`;
+  return `https://storage.googleapis.com/${config.cvBucketName}/${fileName}`;
 }
 
 export async function generateCvBatch(jobs) {
-  if (!config.cvTemplateDocId) {
-    console.log('[cv] CV_TEMPLATE_DOC_ID not set — skipping CV generation');
+  if (!config.cvBucketName) {
+    console.log('[cv] CV_BUCKET_NAME not set — skipping CV generation');
     return [];
   }
 
@@ -89,7 +64,6 @@ export async function generateCvBatch(jobs) {
       console.error(`  [cv] failed ${job.company}/${job.title}: ${err.message}`);
       results.push({ job_id: job.id, cv_url: null });
     }
-    await new Promise(r => setTimeout(r, 500)); // respect Drive API rate limits
   }
   return results;
 }

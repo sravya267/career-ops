@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{NAME}} — CV</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1a1a2e;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 48px;
+  }
+  .header { border-bottom: 3px solid #1a1a2e; padding-bottom: 16px; margin-bottom: 24px; }
+  .header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .header .tagline { font-size: 13px; color: #555; margin-top: 4px; }
+  .header .contact { font-size: 12px; color: #555; margin-top: 6px; }
+  .header .contact a { color: #1a1a2e; }
+
+  .application-banner {
+    background: #f0f4ff;
+    border-left: 4px solid #1a1a2e;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+  .application-banner strong { display: block; font-size: 15px; margin-bottom: 4px; }
+  .application-banner .meta { color: #555; }
+  .application-banner .missing { margin-top: 6px; color: #c0392b; font-style: italic; }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 4px;
+    margin: 20px 0 10px;
+  }
+  .summary p { margin-bottom: 8px; }
+  .job { margin-bottom: 14px; }
+  .job-header { display: flex; justify-content: space-between; align-items: baseline; }
+  .job-title { font-weight: 700; }
+  .job-company { font-weight: 600; color: #444; }
+  .job-date { font-size: 12px; color: #777; white-space: nowrap; }
+  .job ul { margin: 6px 0 0 18px; }
+  .job ul li { margin-bottom: 3px; }
+  .skills-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .skill-tag {
+    background: #f0f4ff;
+    border: 1px solid #c8d4f0;
+    border-radius: 4px;
+    padding: 2px 10px;
+    font-size: 12px;
+  }
+  .edu { display: flex; justify-content: space-between; align-items: baseline; }
+
+  @media print {
+    body { padding: 24px 32px; }
+    .application-banner { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Header — edit your name, tagline and contact info ──────────────────── -->
+<div class="header">
+  <h1>Your Name Here</h1>
+  <div class="tagline">Senior Data Engineer · Cloud · ML/AI · Remote</div>
+  <div class="contact">
+    your.email@example.com ·
+    <a href="https://linkedin.com/in/yourprofile">linkedin.com/in/yourprofile</a> ·
+    <a href="https://github.com/yourgithub">github.com/yourgithub</a>
+  </div>
+</div>
+
+<!-- ── Auto-filled application banner — do not edit ──────────────────────── -->
+<div class="application-banner">
+  <strong>Applying for: {{ROLE}} at {{COMPANY}}</strong>
+  <div class="meta">
+    {{LOCATION}} · Remote: {{REMOTE}} · Level: {{SENIORITY}} · Match score: {{SCORE}}/100 · {{DATE}}
+  </div>
+  <div class="meta">
+    <a href="{{APPLY_URL}}">{{APPLY_URL}}</a>
+  </div>
+  <div class="missing">{{MISSING}}</div>
+</div>
+
+<!-- ── Professional Summary — edit this ───────────────────────────────────── -->
+<h2>Summary</h2>
+<div class="summary">
+  <p>
+    Replace this with your professional summary (3-4 sentences). Highlight your years of experience,
+    core stack, domain expertise, and what makes you stand out. Example: 10+ years building
+    data pipelines and analytics platforms at Fortune 500 companies. Deep expertise in GCP,
+    Python, PySpark, and Airflow. Strong real estate domain background from 14 years at JLL.
+  </p>
+</div>
+
+<!-- ── Experience — edit this section ────────────────────────────────────── -->
+<h2>Experience</h2>
+
+<div class="job">
+  <div class="job-header">
+    <span><span class="job-title">Your Most Recent Title</span> · <span class="job-company">Company Name</span></span>
+    <span class="job-date">Jan 2020 – Present</span>
+  </div>
+  <ul>
+    <li>Add your most impactful achievement here (quantify: reduced pipeline latency by 40%)</li>
+    <li>Second achievement — focus on scale, impact, or technology used</li>
+    <li>Third achievement or responsibility</li>
+  </ul>
+</div>
+
+<div class="job">
+  <div class="job-header">
+    <span><span class="job-title">Previous Title</span> · <span class="job-company">Previous Company</span></span>
+    <span class="job-date">Jun 2016 – Dec 2019</span>
+  </div>
+  <ul>
+    <li>Key achievement at this role</li>
+    <li>Another achievement</li>
+  </ul>
+</div>
+
+<!-- ── Skills — edit this section ────────────────────────────────────────── -->
+<h2>Skills</h2>
+<div class="skills-grid">
+  <span class="skill-tag">Python</span>
+  <span class="skill-tag">PySpark</span>
+  <span class="skill-tag">SQL</span>
+  <span class="skill-tag">GCP</span>
+  <span class="skill-tag">BigQuery</span>
+  <span class="skill-tag">Airflow</span>
+  <span class="skill-tag">dbt</span>
+  <span class="skill-tag">Snowflake</span>
+  <span class="skill-tag">Databricks</span>
+  <span class="skill-tag">Terraform</span>
+  <span class="skill-tag">Docker</span>
+  <span class="skill-tag">Kubernetes</span>
+</div>
+
+<!-- ── Education — edit this section ─────────────────────────────────────── -->
+<h2>Education</h2>
+<div class="edu">
+  <span><strong>Your Degree</strong> · Your University</span>
+  <span style="font-size:12px;color:#777">Year</span>
+</div>
+
+</body>
+</html>
