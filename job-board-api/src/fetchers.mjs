@@ -217,7 +217,8 @@ function makeTitleFilter(keywords) {
 // ── Main export ───────────────────────────────────────────────────────────────
 
 export async function fetchAllJobs(companies = config.portals) {
-  const titleFilter = makeTitleFilter(config.titleKeywords);
+  const titleFilter   = makeTitleFilter(config.titleKeywords, config.titleExclude || []);
+  const companyFilter = makeCompanyFilter(config.companyBlocklist || []);
 
   // 1. Broad remote job platforms (no company list needed)
   const [jobicyJobs, wwrJobs] = await Promise.all([
@@ -225,7 +226,8 @@ export async function fetchAllJobs(companies = config.portals) {
     fetchWeWorkRemotely(),
   ]);
 
-  const platformJobs = [...jobicyJobs, ...wwrJobs].filter(j => titleFilter(j.title));
+  const platformJobs = [...jobicyJobs, ...wwrJobs]
+    .filter(j => titleFilter(j.title) && companyFilter(j.company));
   console.log(`Platform jobs matching title filter: ${platformJobs.length}`);
 
   // 2. Specific company boards (Greenhouse / Lever / Ashby)
