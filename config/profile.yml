@@ -16,21 +16,22 @@ job_search_criteria:
   # TARGET ROLES: Include jobs with these keywords in the title
   target_role_keywords:
     - "data engineer"
-    - "data scientist"
+    - "business intelligence"
+    # - "data scientist"
     - "cloud engineer"
-    - "ml engineer"
-    - "ai engineer"
+    # - "ml engineer"
+    # - "ai engineer"
     - "analytics engineer"
-    - "data platform"
+    # - "data platform"
     - "analytics consultant"
-    - "machine learning"
-    - "data science"
+    # - "machine learning"
+    # - "data science"
     - "data analytics"
-    - "mlops"
-    - "etl"
-    - "snowflake"
-    - "databricks"
-    - "bigquery"
+    # - "mlops"
+    # - "etl"
+    # - "snowflake"
+    # - "databricks"
+    # - "bigquery"
 
   # EXCLUDE: Never show jobs with these keywords in the title
   exclude_role_keywords:
@@ -77,7 +78,7 @@ job_search_criteria:
 # CANDIDATE PROFILE: Used by Gemini for scoring job fit
 # (Optional — provide context about your background and priorities)
 candidate_profile: |
-  Data professional with 14+ years in data engineering, cloud platforms,
+  Data professional with 10+ years in data engineering, cloud platforms,
   and ML/AI. Strong background in Python, PySpark, SQL, Snowflake, Databricks.
   Fully remote only, prioritizes work-life balance and job security over salary.
   Targeting senior IC roles in data engineering, cloud engineering, or ML — no management.
