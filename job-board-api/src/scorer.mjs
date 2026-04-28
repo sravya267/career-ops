@@ -53,7 +53,11 @@ function getModel() {
   if (!_model) {
     _model = new GoogleGenerativeAI(config.geminiKey).getGenerativeModel({
       model: config.geminiModel,
-      generationConfig: { temperature: 0.1, maxOutputTokens: 512 },
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 2048,
+        responseMimeType: 'application/json',
+      },
     });
   }
   return _model;
@@ -75,14 +79,21 @@ function parseResponse(text) {
       summary:          String(parsed.summary || '').slice(0, 200),
     };
   } catch {
-    return { score: -1, missing_skills: '', salary_mentioned: false, remote: 'unclear', seniority: 'unclear', summary: 'parse-error' };
+    return {
+      score: -1, missing_skills: '', salary_mentioned: false,
+      remote: 'unclear', wlb_signals: 'none mentioned', ai_proof: false,
+      stability: 'medium', seniority: 'unclear', summary: 'parse-error',
+    };
   }
 }
 
 export async function scoreJob(job) {
   await throttle();
   const result = await getModel().generateContent(buildPrompt(job));
-  return parseResponse(result.response.text());
+  // Thinking models (gemini-2.5-*) put reasoning in thought parts — filter them out.
+  const parts = result.response.candidates?.[0]?.content?.parts ?? [];
+  const text = parts.filter(p => !p.thought).map(p => p.text ?? '').join('');
+  return parseResponse(text || result.response.text());
 }
 
 export async function scoreBatch(jobs) {
