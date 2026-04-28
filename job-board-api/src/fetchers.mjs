@@ -209,9 +209,19 @@ async function parallelFetch(tasks, limit = 8) {
   return results.flat();
 }
 
-function makeTitleFilter(keywords) {
-  if (!keywords.length) return () => true;
-  return (title) => keywords.some(k => title.toLowerCase().includes(k));
+function makeTitleFilter(include, exclude = []) {
+  const hasInclude = include.length > 0;
+  return (title) => {
+    const t = title.toLowerCase();
+    if (exclude.some(k => t.includes(k))) return false;
+    if (hasInclude && !include.some(k => t.includes(k))) return false;
+    return true;
+  };
+}
+
+function makeCompanyFilter(blocklist) {
+  if (!blocklist.length) return () => true;
+  return (company) => !blocklist.some(b => (company || '').toLowerCase().includes(b));
 }
 
 // ── Main export ───────────────────────────────────────────────────────────────
