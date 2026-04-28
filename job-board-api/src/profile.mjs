@@ -7,7 +7,7 @@ let _profile = null;
 export function loadProfile() {
   if (_profile) return _profile;
 
-  const profilePath = process.env.PROFILE_PATH || resolve(new URL('.', import.meta.url).pathname, '../../config/profile.yml');
+  const profilePath = process.env.PROFILE_PATH || resolve(new URL('.', import.meta.url).pathname, '../config/profile.yml');
 
   if (!existsSync(profilePath)) {
     console.warn(`[profile] not found at ${profilePath} — using defaults`);
