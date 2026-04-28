@@ -227,12 +227,15 @@ function makeCompanyFilter(blocklist) {
 // ── Main export ───────────────────────────────────────────────────────────────
 
 function makeLocationFilter(allowed, requireRemote) {
+  const BLOCKED_COUNTRIES = ['canada', 'uk', 'united kingdom', 'germany', 'france', 'australia', 'india', 'ireland', 'netherlands', 'spain', 'brazil', 'singapore', 'europe', 'emea', 'apac'];
   return (location) => {
     const loc = (location || '').toLowerCase();
-    if (requireRemote && !['remote', 'fully remote', 'distributed'].some(r => loc.includes(r))) {
+    if (BLOCKED_COUNTRIES.some(b => loc.includes(b))) return false;
+    if (requireRemote && !['remote', 'fully remote', 'distributed', 'anywhere'].some(r => loc.includes(r))) {
       return false;
     }
     if (!allowed.length) return true;
+    if (['remote', 'fully remote', 'distributed', 'anywhere', ''].includes(loc.trim())) return true;
     return allowed.some(a => loc.includes(a.toLowerCase()));
   };
 }

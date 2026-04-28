@@ -44,6 +44,8 @@ job_search_criteria:
     - "staff manager"
     - "engineering manager"
     - "people manager"
+    - "unpaid"
+    - "volunteer"
 
   # SENIORITY LEVEL: Target level
   target_seniority: "Senior Individual Contributor"
