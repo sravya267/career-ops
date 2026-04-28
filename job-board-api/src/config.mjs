@@ -1,4 +1,7 @@
 import { readFileSync, existsSync } from 'fs';
+import { getCriteria, getCandidateProfile } from './profile.mjs';
+
+const criteria = getCriteria();
 
 export const config = {
   port:             parseInt(process.env.PORT            || '8080'),
@@ -8,10 +11,12 @@ export const config = {
   bqDataset:        process.env.BQ_DATASET               || 'career_ops',
   bqJobsTable:      process.env.BQ_JOBS_TABLE            || 'jobs',
   bqScoresTable:    process.env.BQ_SCORES_TABLE          || 'scores',
-  candidateProfile: process.env.CANDIDATE_PROFILE        || '',
-  titleKeywords:    parseCsv(process.env.TITLE_KEYWORDS  || 'data engineer,data scientist,cloud engineer,ml engineer,ai engineer,analytics engineer,data platform,analytics consultant,machine learning,data science,data analytics,mlops,etl,snowflake,databricks,bigquery'),
-  titleExclude:     parseCsv(process.env.TITLE_EXCLUDE   || 'manager,director,vp,vice president,head of,chief,staff manager,engineering manager'),
-  companyBlocklist: parseCsv(process.env.COMPANY_BLOCKLIST || 'meta,facebook,google,amazon,apple,netflix,microsoft,uber,lyft,airbnb,tiktok,bytedance,twitter,x corp'),
+  candidateProfile: getCandidateProfile(),
+  titleKeywords:    criteria.target_role_keywords || [],
+  titleExclude:     criteria.exclude_role_keywords || [],
+  companyBlocklist: criteria.excluded_companies || [],
+  allowedLocations: criteria.allowed_locations || ['United States', 'Remote'],
+  requireFullyRemote: criteria.require_fully_remote !== false,
   maxJobsPerRun:    parseInt(process.env.MAX_JOBS_PER_RUN || '50'),
   fetchTimeoutMs:   parseInt(process.env.FETCH_TIMEOUT_MS || '40000'),
   fetchDescriptions: process.env.FETCH_DESCRIPTIONS === 'true',
@@ -24,9 +29,6 @@ export const config = {
   cvBatchSize:     parseInt(process.env.CV_BATCH_SIZE || '10'),
 };
 
-function parseCsv(str) {
-  return str.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-}
 
 function loadPortals() {
   if (process.env.PORTALS_JSON) {

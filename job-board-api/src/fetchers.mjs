@@ -226,9 +226,21 @@ function makeCompanyFilter(blocklist) {
 
 // ── Main export ───────────────────────────────────────────────────────────────
 
+function makeLocationFilter(allowed, requireRemote) {
+  return (location) => {
+    const loc = (location || '').toLowerCase();
+    if (requireRemote && !['remote', 'fully remote', 'distributed'].some(r => loc.includes(r))) {
+      return false;
+    }
+    if (!allowed.length) return true;
+    return allowed.some(a => loc.includes(a.toLowerCase()));
+  };
+}
+
 export async function fetchAllJobs(companies = config.portals) {
   const titleFilter   = makeTitleFilter(config.titleKeywords, config.titleExclude || []);
   const companyFilter = makeCompanyFilter(config.companyBlocklist || []);
+  const locationFilter = makeLocationFilter(config.allowedLocations, config.requireFullyRemote);
 
   // 1. Broad remote job platforms (no company list needed)
   const [jobicyJobs, wwrJobs] = await Promise.all([
@@ -237,7 +249,7 @@ export async function fetchAllJobs(companies = config.portals) {
   ]);
 
   const platformJobs = [...jobicyJobs, ...wwrJobs]
-    .filter(j => titleFilter(j.title) && companyFilter(j.company));
+    .filter(j => titleFilter(j.title) && companyFilter(j.company) && locationFilter(j.location));
   console.log(`Platform jobs matching title filter: ${platformJobs.length}`);
 
   // 2. Specific company boards (Greenhouse / Lever / Ashby)
@@ -258,7 +270,7 @@ export async function fetchAllJobs(companies = config.portals) {
         if (type === 'greenhouse' && config.fetchDescriptions) {
           jobs = await enrichGreenhouseDescriptions(jobs, boardToken);
         }
-        return jobs.filter(j => j.url && titleFilter(j.title));
+        return jobs.filter(j => j.url && titleFilter(j.title) && locationFilter(j.location));
       } catch (err) {
         errors.push({ company: company.name, error: err.message });
         return [];
