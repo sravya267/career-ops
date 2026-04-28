@@ -22,7 +22,27 @@
   {"name": "CoStar Group",  "careers_url": "https://boards.greenhouse.io/costargroup",      "note": "CRE data platform, strong real estate domain match"},
   {"name": "Veeva Systems", "careers_url": "https://boards.greenhouse.io/veeva",            "note": "remote-first, stable profitable SaaS"},
   {"name": "Grafana Labs",  "careers_url": "https://boards.greenhouse.io/grafanalabs",      "note": "fully remote, observability platform"},
-  {"name": "Airbyte",       "careers_url": "https://jobs.ashbyhq.com/airbyte",              "note": "remote, open-source data integration"},
-  {"name": "Atlan",         "careers_url": "https://jobs.ashbyhq.com/atlan",                "note": "remote, data catalog"},
-  {"name": "Doist",         "careers_url": "https://jobs.ashbyhq.com/doist",                "note": "fully remote, async-first, Todoist maker"}
+
+  {"name": "Lemonade",      "careers_url": "https://boards.greenhouse.io/lemonade",         "note": "InsurTech, fully remote, data-driven"},
+  {"name": "Oscar Health",  "careers_url": "https://boards.greenhouse.io/oscar",            "note": "Health insurance tech, data platform, remote"},
+  {"name": "Next Insurance","careers_url": "https://boards.greenhouse.io/nextinsurance",    "note": "SMB insurance, modern data stack"},
+  {"name": "Coalition",     "careers_url": "https://boards.greenhouse.io/coalition",        "note": "Cyber insurance, ML/data-heavy, remote"},
+  {"name": "Root Insurance","careers_url": "https://boards.greenhouse.io/rootinc",          "note": "Telematics insurance, data/ML driven"},
+  {"name": "Hippo",         "careers_url": "https://boards.greenhouse.io/hippo",            "note": "Proptech + insurance, data-driven"},
+
+  {"name": "RAND Corporation",   "careers_url": "https://boards.greenhouse.io/rand",        "note": "Nonprofit research, policy, excellent WLB"},
+  {"name": "ICF International",  "careers_url": "https://boards.greenhouse.io/icf",         "note": "Gov/public sector analytics, consulting"},
+  {"name": "Guidehouse",         "careers_url": "https://boards.greenhouse.io/guidehouse",  "note": "Government tech consulting, analytics focus"},
+  {"name": "RTI International",  "careers_url": "https://boards.greenhouse.io/rti",         "note": "Research nonprofit, data science, mission-driven"},
+  {"name": "Noblis",             "careers_url": "https://boards.greenhouse.io/noblis",      "note": "Nonprofit gov tech, mission-driven, remote options"},
+
+  {"name": "Plaid",         "careers_url": "https://boards.greenhouse.io/plaid",            "note": "Financial data infrastructure, remote"},
+  {"name": "Brex",          "careers_url": "https://boards.greenhouse.io/brex",             "note": "Finance + data platform, remote options"},
+  {"name": "Starburst",     "careers_url": "https://boards.greenhouse.io/starburstdata",    "note": "Trino/distributed SQL, remote-first, data infra"},
+  {"name": "AppFolio",      "careers_url": "https://boards.greenhouse.io/appfolio",         "note": "Property management SaaS, real estate domain"},
+  {"name": "Health Catalyst", "careers_url": "https://boards.greenhouse.io/healthcatalyst",  "note": "Healthcare data platform, stable, mission-driven"},
+
+  {"name": "Lessen",        "careers_url": "https://boards.greenhouse.io/lessen",           "note": "Property operations platform, proptech, remote"},
+  {"name": "Building Engines", "careers_url": "https://boards.greenhouse.io/buildingengin", "note": "Commercial property ops, data analytics"},
+  {"name": "Dealpath",      "careers_url": "https://boards.greenhouse.io/dealpath",         "note": "CRE deal management, data-heavy, real estate"}
 ]
