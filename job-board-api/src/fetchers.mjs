@@ -149,7 +149,7 @@ function detectApi(company) {
   const lever = url.match(/jobs\.lever\.co\/([^/?#]+)/);
   if (lever) return { type: 'lever', url: `https://api.lever.co/v0/postings/${lever[1]}` };
 
-  const gh = url.match(/job-boards(?:\.eu)?\.greenhouse\.io\/([^/?#]+)/);
+  const gh = url.match(/(?:job-boards(?:\.eu)?|boards)\.greenhouse\.io\/([^/?#]+)/);
   if (gh) return { type: 'greenhouse', boardToken: gh[1], url: `https://boards-api.greenhouse.io/v1/boards/${gh[1]}/jobs` };
 
   const ghApi = url.match(/boards-api\.greenhouse\.io\/v1\/boards\/([^/?#]+)/);
