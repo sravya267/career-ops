@@ -1,0 +1,85 @@
+# Career-Ops Job Search Criteria Configuration
+# Edit this file to change what jobs appear in your pipeline
+# No personal data here — this can be safely committed to git
+
+job_search_criteria:
+
+  # LOCATION: Jobs must be in these locations
+  # (can use "United States", "Remote", "Canada", etc.)
+  allowed_locations:
+    - "United States"
+    - "Remote"
+
+  # REMOTE: Require fully remote (not hybrid or onsite)
+  require_fully_remote: true
+
+  # TARGET ROLES: Include jobs with these keywords in the title
+  target_role_keywords:
+    - "data engineer"
+    - "data scientist"
+    - "cloud engineer"
+    - "ml engineer"
+    - "ai engineer"
+    - "analytics engineer"
+    - "data platform"
+    - "analytics consultant"
+    - "machine learning"
+    - "data science"
+    - "data analytics"
+    - "mlops"
+    - "etl"
+    - "snowflake"
+    - "databricks"
+    - "bigquery"
+
+  # EXCLUDE: Never show jobs with these keywords in the title
+  exclude_role_keywords:
+    - "manager"
+    - "director"
+    - "vp"
+    - "vice president"
+    - "head of"
+    - "chief"
+    - "staff manager"
+    - "engineering manager"
+    - "people manager"
+
+  # SENIORITY LEVEL: Target level
+  target_seniority: "Senior Individual Contributor"
+
+  # COMPANY BLOCKLIST: Exclude these companies by name
+  excluded_companies:
+    - "meta"
+    - "facebook"
+    - "google"
+    - "amazon"
+    - "apple"
+    - "netflix"
+    - "microsoft"
+    - "uber"
+    - "lyft"
+    - "airbnb"
+    - "tiktok"
+    - "bytedance"
+    - "twitter"
+    - "x corp"
+
+  # COMPANY BONUSES: Add bonus points to specific companies
+  # Useful for domain expertise (e.g., real estate experience)
+  company_bonuses:
+    - company: "Procore"
+      bonus_points: 5
+      reason: "Real estate tech"
+    - company: "CoStar"
+      bonus_points: 5
+      reason: "Real estate data platform"
+
+# CANDIDATE PROFILE: Used by Gemini for scoring job fit
+# (Optional — provide context about your background and priorities)
+candidate_profile: |
+  Data professional with 14+ years in data engineering, cloud platforms,
+  and ML/AI. Strong background in Python, PySpark, SQL, Snowflake, Databricks.
+  Fully remote only, prioritizes work-life balance and job security over salary.
+  Targeting senior IC roles in data engineering, cloud engineering, or ML — no management.
+  Prefers building data infrastructure that AI depends on, not roles AI could replace.
+
