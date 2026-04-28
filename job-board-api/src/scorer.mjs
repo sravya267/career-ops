@@ -90,10 +90,8 @@ function parseResponse(text) {
 export async function scoreJob(job) {
   await throttle();
   const result = await getModel().generateContent(buildPrompt(job));
-  // Thinking models (gemini-2.5-*) put reasoning in thought parts — filter them out.
-  const parts = result.response.candidates?.[0]?.content?.parts ?? [];
-  const text = parts.filter(p => !p.thought).map(p => p.text ?? '').join('');
-  return parseResponse(text || result.response.text());
+  // SDK 0.24.0+ handles thinking models automatically
+  return parseResponse(result.response.text());
 }
 
 export async function scoreBatch(jobs) {
