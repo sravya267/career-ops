@@ -13,7 +13,7 @@ export const config = {
   titleExclude:     parseCsv(process.env.TITLE_EXCLUDE   || 'manager,director,vp,vice president,head of,chief,staff manager,engineering manager'),
   companyBlocklist: parseCsv(process.env.COMPANY_BLOCKLIST || 'meta,facebook,google,amazon,apple,netflix,microsoft,uber,lyft,airbnb,tiktok,bytedance,twitter,x corp'),
   maxJobsPerRun:    parseInt(process.env.MAX_JOBS_PER_RUN || '50'),
-  fetchTimeoutMs:   parseInt(process.env.FETCH_TIMEOUT_MS || '25000'),
+  fetchTimeoutMs:   parseInt(process.env.FETCH_TIMEOUT_MS || '40000'),
   fetchDescriptions: process.env.FETCH_DESCRIPTIONS === 'true',
   portals:          loadPortals(),
 

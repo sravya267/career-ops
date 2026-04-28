@@ -202,7 +202,7 @@ async function enrichGreenhouseDescriptions(jobs, boardToken) {
   return enriched;
 }
 
-async function parallelFetch(tasks, limit = 8) {
+async function parallelFetch(tasks, limit = 3) {
   const results = []; let i = 0;
   async function next() { while (i < tasks.length) results.push(await tasks[i++]()); }
   await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, () => next()));
