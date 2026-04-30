@@ -21,5 +21,10 @@
   {"name": "Roofstock",     "careers_url": "https://jobs.lever.co/roofstock",                   "note": "single-family rental marketplace, data-driven"},
   {"name": "Blend",         "careers_url": "https://jobs.lever.co/blendlabs",                   "note": "digital mortgage/lending platform, fintech"},
   {"name": "Better.com",    "careers_url": "https://jobs.lever.co/better",                      "note": "AI mortgage platform, data-heavy"},
-  {"name": "VTS",           "careers_url": "https://jobs.lever.co/vts",                         "note": "commercial real estate software, analytics"}
+  {"name": "VTS",           "careers_url": "https://boards.greenhouse.io/vts",                  "note": "commercial real estate software, analytics"},
+
+  {"name": "Compass",       "careers_url": "https://jobs.lever.co/compass",                      "note": "tech-enabled real estate brokerage, data and ML platform"},
+  {"name": "Lessen",        "careers_url": "https://boards.greenhouse.io/lessen",                "note": "facility management tech, data platform and ML engineering"},
+  {"name": "EliseAI",       "careers_url": "https://jobs.ashbyhq.com/eliseai",                   "note": "PropTech AI unicorn, NLP/AI for property management workflows"},
+  {"name": "Airbnb",        "careers_url": "https://boards.greenhouse.io/airbnb",                "note": "PropTech marketplace, causal inference and large-scale data science"}
 ]

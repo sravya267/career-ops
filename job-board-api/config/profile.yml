@@ -61,7 +61,6 @@ job_search_criteria:
     - "microsoft"
     - "uber"
     - "lyft"
-    - "airbnb"
     - "tiktok"
     - "bytedance"
     - "twitter"
@@ -97,6 +96,18 @@ job_search_criteria:
     - company: "Blend"
       bonus_points: 5
       reason: "Mortgage lending platform"
+    - company: "Compass"
+      bonus_points: 7
+      reason: "Tech-enabled real estate brokerage — real estate domain match"
+    - company: "EliseAI"
+      bonus_points: 8
+      reason: "PropTech AI unicorn — builds AI infrastructure for property management"
+    - company: "Lessen"
+      bonus_points: 6
+      reason: "Facility management tech — real estate adjacent, data platform focus"
+    - company: "Airbnb"
+      bonus_points: 6
+      reason: "PropTech marketplace — large-scale data infrastructure, causal inference"
 
 # CANDIDATE PROFILE: Used by Gemini for scoring job fit
 # (Optional — provide context about your background and priorities)
