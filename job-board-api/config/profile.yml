@@ -96,33 +96,6 @@ job_search_criteria:
     - company: "Blend"
       bonus_points: 5
       reason: "Mortgage lending platform"
-    - company: "Compass"
-      bonus_points: 7
-      reason: "Tech-enabled real estate brokerage — real estate domain match"
-    - company: "EliseAI"
-      bonus_points: 8
-      reason: "PropTech AI unicorn — builds AI infrastructure for property management"
-    - company: "Lessen"
-      bonus_points: 6
-      reason: "Facility management tech — real estate adjacent, data platform focus"
-    - company: "Airbnb"
-      bonus_points: 6
-      reason: "PropTech marketplace — large-scale data infrastructure, causal inference"
-    - company: "DoorLoop"
-      bonus_points: 6
-      reason: "Property management SaaS — real estate domain match"
-    - company: "Valon"
-      bonus_points: 7
-      reason: "AI-native mortgage servicing — builds data infrastructure for regulated RE finance"
-    - company: "Greystar"
-      bonus_points: 8
-      reason: "Global property management — direct domain match from JLL background"
-    - company: "Zillow"
-      bonus_points: 7
-      reason: "Real estate marketplace — large-scale data platform, strong domain match"
-    - company: "Experian"
-      bonus_points: 5
-      reason: "Credit and data analytics — highly regulated, stable, data-infrastructure focus"
 
 # CANDIDATE PROFILE: Used by Gemini for scoring job fit
 # (Optional — provide context about your background and priorities)
