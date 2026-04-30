@@ -1,103 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CV — {{ROLE}} at {{COMPANY}}</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 13.5px;
-    line-height: 1.55;
-    color: #1a1a2e;
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 36px 48px;
-  }
-  .header { border-bottom: 3px solid #1a1a2e; padding-bottom: 14px; margin-bottom: 20px; }
-  .header h1 { font-size: 25px; font-weight: 700; letter-spacing: -0.5px; }
-  .header .tagline { font-size: 13px; color: #444; margin-top: 3px; }
-  .header .contact { font-size: 12px; color: #666; margin-top: 5px; }
-  .header .contact a { color: #1a1a2e; text-decoration: none; }
-
-  .banner {
-    background: #f0f4ff;
-    border-left: 4px solid #1a1a2e;
-    padding: 11px 15px;
-    margin-bottom: 20px;
-    font-size: 13px;
-  }
-  .banner strong { display: block; font-size: 14.5px; font-weight: 700; margin-bottom: 3px; }
-  .banner .meta { color: #555; }
-  .banner .missing { margin-top: 5px; color: #c0392b; font-style: italic; }
-
-  h2 {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    color: #666;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 3px;
-    margin: 18px 0 9px;
-  }
-  p { margin-bottom: 7px; }
-  .job { margin-bottom: 13px; }
-  .job-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px; }
-  .job-title { font-weight: 700; font-size: 13.5px; }
-  .job-company { font-weight: 600; color: #333; }
-  .job-date { font-size: 11.5px; color: #777; white-space: nowrap; }
-  .job ul { margin: 5px 0 0 17px; }
-  .job ul li { margin-bottom: 3px; }
-  .sub-section { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
-    color: #555; margin: 8px 0 4px; }
-  .skills-grid { display: flex; flex-wrap: wrap; gap: 5px; }
-  .skill-tag {
-    background: #f0f4ff; border: 1px solid #c8d4f0;
-    border-radius: 4px; padding: 2px 9px; font-size: 12px;
-  }
-  .edu-row { display: flex; justify-content: space-between; align-items: baseline; }
-  .edu-note { font-size: 12px; color: #555; margin-top: 3px; }
-
-  @media print {
-    body { padding: 20px 30px; font-size: 12.5px; }
-    .banner { page-break-inside: avoid; }
-    h2 { margin-top: 14px; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV — {{ROLE}} at {{COMPANY}}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.5;
+      color: #222;
+      max-width: 8.5in;
+      margin: 0 auto;
+      padding: 0.5in;
+      background: white;
+    }
+    .header {
+      border-bottom: 2px solid #000;
+      padding-bottom: 0.15in;
+      margin-bottom: 0.2in;
+    }
+    .header h1 {
+      font-size: 16pt;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+    .header .contact {
+      font-size: 10pt;
+      color: #444;
+      margin-top: 0.05in;
+    }
+    .header .target {
+      font-size: 10pt;
+      color: #0066cc;
+      font-weight: 600;
+      margin-top: 0.05in;
+    }
+    .section {
+      margin-bottom: 0.2in;
+    }
+    .section h2 {
+      font-size: 11pt;
+      font-weight: 700;
+      border-bottom: 1px solid #000;
+      padding-bottom: 0.05in;
+      margin-bottom: 0.1in;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .job {
+      margin-bottom: 0.15in;
+    }
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.02in;
+    }
+    .job-title {
+      font-weight: 700;
+      font-size: 11pt;
+    }
+    .job-company {
+      font-weight: 600;
+      color: #0066cc;
+    }
+    .job-dates {
+      font-size: 10pt;
+      color: #666;
+    }
+    .job-description {
+      font-size: 10.5pt;
+      color: #333;
+      margin-top: 0.05in;
+    }
+    .job-description li {
+      margin-left: 0.2in;
+      margin-bottom: 0.03in;
+      list-style-position: outside;
+    }
+    .highlight {
+      font-weight: 600;
+      color: #0066cc;
+    }
+    .summary {
+      font-size: 10pt;
+      line-height: 1.4;
+      color: #333;
+    }
+    .skills-grid {
+      font-size: 10pt;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.1in;
+      margin-top: 0.05in;
+    }
+    .skill-category {
+      margin-bottom: 0.05in;
+    }
+    .skill-category strong {
+      color: #0066cc;
+    }
+    .banner {
+      background: #f5f5f5;
+      border-left: 3px solid #0066cc;
+      padding: 0.08in 0.1in;
+      margin: 0.1in 0;
+      font-size: 10pt;
+      font-weight: 500;
+    }
+    .score-badge {
+      display: inline-block;
+      background: #0066cc;
+      color: white;
+      padding: 0.05in 0.1in;
+      border-radius: 3px;
+      font-weight: 600;
+      margin-left: 0.1in;
+    }
+    @media print {
+      body { padding: 0.4in; }
+      .score-badge { display: none; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ── Header ─────────────────────────────────────────────────────────────── -->
 <div class="header">
-  <h1>Sravya Thoomu</h1>
-  <div class="tagline">Fullstack Data &amp; Analytics Professional · GCP · Azure · Python · PySpark · ML/AI · Remote</div>
-  <div class="contact">
-    sthoomu@gmail.com ·
-    <a href="https://linkedin.com/in/sravyathoomu">linkedin.com/in/sravyathoomu</a>
+  <h1>SRAVYA THOOMU</h1>
+  <div class="contact">sthoomu@gmail.com | (919) 579-8832</div>
+  <div class="target">
+    Applying for: <span class="highlight">{{ROLE}} at {{COMPANY}}</span>
+    <span class="score-badge">Match: {{SCORE}}/100</span>
   </div>
 </div>
 
-<!-- ── Application banner (auto-filled per job) ───────────────────────────── -->
-<div class="banner">
-  <strong>Applying for: {{ROLE}} at {{COMPANY}}</strong>
-  <div class="meta">{{LOCATION}} · Remote: {{REMOTE}} · Level: {{SENIORITY}} · Match score: {{SCORE}}/100 · {{DATE}}</div>
-  <div class="meta"><a href="{{APPLY_URL}}">{{APPLY_URL}}</a></div>
-  <div class="missing">{{MISSING}}</div>
+<div class="banner">{{MISSING}}</div>
+
+<div class="section">
+  <h2>PROFESSIONAL SUMMARY</h2>
+  <p class="summary">
+    Fullstack data and analytics professional with 14+ years of end-to-end experience designing scalable data pipelines, deploying predictive and AI/ML models, and translating complex datasets into executive-facing insights. Deep expertise in Python, SQL, PySpark, and cloud platforms (GCP, Azure, AWS), with specialized knowledge in ETL/ELT architecture, data governance, NLP/LLM automation, and advanced analytics. Proven track record leading cross-functional teams and engaging with senior business stakeholders to define analytics strategy, implement sophisticated models, and drive measurable business outcomes.
+  </p>
 </div>
 
-<!-- ── Summary ────────────────────────────────────────────────────────────── -->
-<h2>Professional Summary</h2>
-<p>
-  Fullstack data and analytics professional with 14+ years of end-to-end experience designing scalable
-  data pipelines, deploying predictive and AI/ML models, and translating complex datasets into
-  executive-facing insights. Proven expertise in Python, SQL, PySpark, and cloud platforms (GCP, Azure,
-  AWS), with deep fluency in ETL/ELT architecture, data governance, NLP and LLM-powered automation,
-  and advanced analytics. Experienced leading cross-functional teams and engaging directly with senior
-  business stakeholders across Finance, Operations, and Product to define analytics strategy, implement
-  sophisticated models within existing workflows, and drive measurable business outcomes.
-</p>
+<div class="section">
+  <h2>PROFESSIONAL EXPERIENCE</h2>
+
+  <div class="job">
+    <div class="job-header">
+      <span><span class="job-title">Data and Analytics Consultant</span> · <span class="job-company">Self-Directed Projects</span></span>
+      <span class="job-dates">Dec 2025 – Present</span>
+    </div>
+    <div class="job-description">
+      <ul>
+        <li>Designed and built an AI-powered K-2 math worksheet generation application using <span class="highlight">Python and FastAPI</span>, owning full project lifecycle from requirements through production deployment.</li>
+        <li>Applied ML algorithms to implement spiral and fluency learning models adapting to individual student performance data with <span class="highlight">LLM application skills</span>.</li>
+        <li>Integrated prompt engineering and <span class="highlight">GenAI-powered automation</span> to dynamically generate differentiated content based on learner feedback loops.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="job">
+    <div class="job-header">
+      <span><span class="job-title">Technical Data Analytics Lead</span> · <span class="job-company">Jones Lang LaSalle (Fortune 500)</span></span>
+      <span class="job-dates">Dec 2012 – Dec 2025</span>
+    </div>
+    <div class="job-description">
+      <strong>Leadership & Strategy:</strong> Led team of data scientists and engineers across global organization, setting technical direction and aligning analytics to business priorities. Partnered directly with Finance, Operations, and Product leadership to translate business problems into solutions presented to executive management.
+      <br/><strong>Data Engineering:</strong> Architected <span class="highlight">metadata-driven ETL pipelines on Azure</span> integrating 10+ source systems. Designed cloud data pipelines using <span class="highlight">modular Python and Airflow</span> across GCP and Azure. Built and optimized <span class="highlight">Spark/PySpark</span> workflows with performance tuning. Constructed <span class="highlight">Snowflake and Databricks</span> data warehouse solutions. Delivered DaVinci Award-winning pipeline automation saving $200K+ annually.
+      <br/><strong>Data Governance & Quality:</strong> Implemented end-to-end validation frameworks with automated alerting. Built executive dashboards with real-time data quality metrics.
+      <br/><strong>Data Science & AI:</strong> Developed <span class="highlight">NLP solutions using large language models</span> for categorization and sentiment analysis. Built predictive models for financial analysis, forecasting, and segmentation.
+    </div>
+  </div>
+
+  <div class="job">
+    <div class="job-header">
+      <span><span class="job-title">Data Science & Engineering Manager</span> · <span class="job-company">Mediamath</span></span>
+      <span class="job-dates">Feb 2015 – Oct 2015</span>
+    </div>
+    <div class="job-description">
+      Developed <span class="highlight">Python and R</span> ML models for customer segmentation, behavior prediction, and revenue optimization. Performed time-series forecasting and statistical analysis. Built batch data pipelines delivering measurable efficiency gains.
+    </div>
+  </div>
+
+  <div class="job">
+    <div class="job-header">
+      <span><span class="job-title">Safety Optimization Analyst</span> · <span class="job-company">Ford Motor Company</span></span>
+      <span class="job-dates">Aug 2010 – Dec 2012</span>
+    </div>
+    <div class="job-description">
+      Developed quantitative mathematical models and optimization algorithms. Built <span class="highlight">SQL</span>-based data extraction pipelines and <span class="highlight">R</span> forecasting models supporting analytics and demand modeling.
+    </div>
+  </div>
+
+</div>
+
+<div class="section">
+  <h2>TECHNICAL SKILLS</h2>
+  <div class="skills-grid">
+    <div class="skill-category">
+      <strong>Languages:</strong> Python (pandas, NumPy, PySpark, scikit-learn, FastAPI, TensorFlow), SQL, R, MATLAB
+    </div>
+    <div class="skill-category">
+      <strong>Cloud & Platforms:</strong> GCP, Azure, AWS, Snowflake, Databricks, Cloud Run, Cloud Functions
+    </div>
+    <div class="skill-category">
+      <strong>Data Engineering:</strong> Apache Airflow, Spark/PySpark, dbt, Fivetran, Alteryx, metadata-driven ETL
+    </div>
+    <div class="skill-category">
+      <strong>AI/ML:</strong> Predictive modeling, time-series forecasting, NLP/LLMs, Hugging Face, prompt engineering, GenAI
+    </div>
+    <div class="skill-category">
+      <strong>Governance:</strong> Data contracts, validation frameworks, quality dashboards, ETL governance
+    </div>
+    <div class="skill-category">
+      <strong>Visualization:</strong> Tableau, Power BI, Streamlit, Plotly/Dash, D3.js, ggplot2
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>EDUCATION</h2>
+  <div class="job">
+    <div class="job-header">
+      <span><span class="job-title">M.S. Machine Learning and Optimization</span> · <span class="job-company">Clemson University</span></span>
+      <span class="job-dates">Aug 2008 – Aug 2010</span>
+    </div>
+    <div class="job-description">
+      Thesis: <em>Design Decisions Under Uncertainty</em>. Research Assistant, Automotive Research Center.
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 0.2in; font-size: 9pt; color: #999; border-top: 1px solid #ddd; padding-top: 0.1in;">
+  Generated {{DATE}} | Tailored for {{COMPANY}} — {{ROLE}} | <a href="{{APPLY_URL}}">View Job Posting</a>
+</div>
 
 <!-- ── Experience ─────────────────────────────────────────────────────────── -->
 <h2>Experience</h2>
