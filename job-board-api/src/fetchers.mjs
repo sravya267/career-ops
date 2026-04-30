@@ -26,6 +26,23 @@ async function fetchJson(url) {
   }
 }
 
+async function fetchJsonPost(url, body) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), config.fetchTimeoutMs);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      signal: ctrl.signal,
+      headers: { ...HEADERS, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function fetchText(url) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), config.fetchTimeoutMs);
@@ -135,25 +152,46 @@ export async function fetchWeWorkRemotely() {
   return jobs;
 }
 
-// ── Greenhouse / Lever / Ashby company boards ─────────────────────────────────
+// ── Greenhouse / Lever / Ashby / Workday / SmartRecruiters company boards ──────
 
 function detectApi(company) {
-  if (company.api?.includes('greenhouse')) {
-    return { type: 'greenhouse', boardToken: extractGreenhouseToken(company.api), url: company.api };
-  }
-  const url = company.careers_url || '';
+  const careersUrl = company.careers_url || '';
+  const apiUrl     = company.api         || '';
 
-  const ashby = url.match(/jobs\.ashbyhq\.com\/([^/?#]+)/);
+  // Explicit api field: Greenhouse
+  if (apiUrl.includes('greenhouse')) {
+    return { type: 'greenhouse', boardToken: extractGreenhouseToken(apiUrl), url: apiUrl };
+  }
+
+  // Explicit api field: Workday (POST-based API)
+  if (apiUrl.includes('myworkdayjobs.com/wday/cxs')) {
+    const base = apiUrl.match(/^(https?:\/\/[^/]+)/)?.[1] || '';
+    return { type: 'workday', url: apiUrl, baseUrl: base };
+  }
+
+  // Explicit api field: SmartRecruiters
+  if (apiUrl.includes('api.smartrecruiters.com')) {
+    return { type: 'smartrecruiters', url: apiUrl };
+  }
+
+  // careers_url pattern matching
+  const ashby = careersUrl.match(/jobs\.ashbyhq\.com\/([^/?#]+)/);
   if (ashby) return { type: 'ashby', url: `https://api.ashbyhq.com/posting-api/job-board/${ashby[1]}?includeCompensation=true` };
 
-  const lever = url.match(/jobs\.lever\.co\/([^/?#]+)/);
+  const lever = careersUrl.match(/jobs\.lever\.co\/([^/?#]+)/);
   if (lever) return { type: 'lever', url: `https://api.lever.co/v0/postings/${lever[1]}` };
 
-  const gh = url.match(/(?:job-boards(?:\.eu)?|boards)\.greenhouse\.io\/([^/?#]+)/);
+  const gh = careersUrl.match(/(?:job-boards(?:\.eu)?|boards)\.greenhouse\.io\/([^/?#]+)/);
   if (gh) return { type: 'greenhouse', boardToken: gh[1], url: `https://boards-api.greenhouse.io/v1/boards/${gh[1]}/jobs` };
 
-  const ghApi = url.match(/boards-api\.greenhouse\.io\/v1\/boards\/([^/?#]+)/);
-  if (ghApi) return { type: 'greenhouse', boardToken: ghApi[1], url };
+  const ghApi = careersUrl.match(/boards-api\.greenhouse\.io\/v1\/boards\/([^/?#]+)/);
+  if (ghApi) return { type: 'greenhouse', boardToken: ghApi[1], url: careersUrl };
+
+  // Workday careers_url (requires an explicit api field to know the POST endpoint)
+  if (careersUrl.includes('myworkdayjobs.com') && apiUrl.includes('myworkdayjobs.com')) {
+    const base = apiUrl.match(/^(https?:\/\/[^/]+)/)?.[1] || '';
+    return { type: 'workday', url: apiUrl, baseUrl: base };
+  }
 
   return null;
 }
@@ -184,6 +222,28 @@ function parseAshby(json, company) {
     company, title: j.title || '', location: j.isRemote ? 'Remote' : (j.location || ''),
     description: stripHtml(j.descriptionHtml || '').slice(0, 4000),
     source: 'ashby', fetched_at: now(),
+  }));
+}
+
+function parseWorkday(json, company, baseUrl) {
+  return (json.jobPostings || []).map(j => {
+    const path = j.externalPath || '';
+    const url  = path ? `${baseUrl}${path}` : '';
+    return {
+      id: jobId(url || j.title || ''), url,
+      company, title: j.title || '',
+      location: j.locationsText || '',
+      description: '', source: 'workday', fetched_at: now(),
+    };
+  });
+}
+
+function parseSmartRecruiters(json, company) {
+  return (json.content || []).map(j => ({
+    id: jobId(j.ref || j.id || ''), url: j.ref || '',
+    company, title: j.name || '',
+    location: [j.location?.city, j.location?.country].filter(Boolean).join(', '),
+    description: '', source: 'smartrecruiters', fetched_at: now(),
   }));
 }
 
@@ -266,12 +326,21 @@ export async function fetchAllJobs(companies = config.portals) {
   const errors = [];
   const companyJobs = await parallelFetch(
     targets.map(company => async () => {
-      const { type, url, boardToken } = company._api;
+      const { type, url, boardToken, baseUrl } = company._api;
       try {
-        const json = await fetchJson(url);
-        let jobs = PARSERS[type](json, company.name);
-        if (type === 'greenhouse' && config.fetchDescriptions) {
-          jobs = await enrichGreenhouseDescriptions(jobs, boardToken);
+        let jobs;
+        if (type === 'workday') {
+          const json = await fetchJsonPost(url, { limit: 50, offset: 0, searchText: '', appliedFacets: {} });
+          jobs = parseWorkday(json, company.name, baseUrl);
+        } else if (type === 'smartrecruiters') {
+          const json = await fetchJson(url);
+          jobs = parseSmartRecruiters(json, company.name);
+        } else {
+          const json = await fetchJson(url);
+          jobs = PARSERS[type](json, company.name);
+          if (type === 'greenhouse' && config.fetchDescriptions) {
+            jobs = await enrichGreenhouseDescriptions(jobs, boardToken);
+          }
         }
         return jobs.filter(j => j.url && titleFilter(j.title) && locationFilter(j.location));
       } catch (err) {

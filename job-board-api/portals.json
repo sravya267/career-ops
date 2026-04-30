@@ -26,5 +26,11 @@
   {"name": "Compass",       "careers_url": "https://jobs.lever.co/compass",                      "note": "tech-enabled real estate brokerage, data and ML platform"},
   {"name": "Lessen",        "careers_url": "https://boards.greenhouse.io/lessen",                "note": "facility management tech, data platform and ML engineering"},
   {"name": "EliseAI",       "careers_url": "https://jobs.ashbyhq.com/eliseai",                   "note": "PropTech AI unicorn, NLP/AI for property management workflows"},
-  {"name": "Airbnb",        "careers_url": "https://boards.greenhouse.io/airbnb",                "note": "PropTech marketplace, causal inference and large-scale data science"}
+  {"name": "Airbnb",        "careers_url": "https://boards.greenhouse.io/airbnb",                "note": "PropTech marketplace, causal inference and large-scale data science"},
+  {"name": "DoorLoop",      "careers_url": "https://boards.greenhouse.io/doorloop",              "note": "property management SaaS, cloud ops and data analytics"},
+  {"name": "Valon",         "careers_url": "https://jobs.ashbyhq.com/Valon",                     "note": "AI-native mortgage servicing, real estate fintech"},
+
+  {"name": "Greystar",      "careers_url": "https://greystar.wd1.myworkdayjobs.com/en-US/External/", "api": "https://greystar.wd1.myworkdayjobs.com/wday/cxs/greystar/External/jobs",           "note": "global property management, Workday ATS"},
+  {"name": "Zillow",        "careers_url": "https://zillow.wd5.myworkdayjobs.com/Zillow_Group_External", "api": "https://zillow.wd5.myworkdayjobs.com/wday/cxs/zillow/Zillow_Group_External/jobs", "note": "real estate marketplace, large-scale data science"},
+  {"name": "Experian",      "careers_url": "https://careers.smartrecruiters.com/experian",       "api": "https://api.smartrecruiters.com/v1/companies/experian/postings",                   "note": "credit and data analytics, highly regulated financial data"}
 ]
