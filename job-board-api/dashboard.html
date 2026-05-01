@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career-Ops Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #222; }
+
+    header {
+      background: #1a1a2e; color: white;
+      padding: 18px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    header h1 { font-size: 20px; font-weight: 700; }
+    header span { font-size: 12px; color: #aaa; }
+
+    .filters {
+      background: white; padding: 14px 32px;
+      display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap;
+      border-bottom: 1px solid #e0e0e0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .fg { display: flex; flex-direction: column; gap: 4px; }
+    .fg label { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+    .fg select {
+      padding: 7px 12px; border: 1px solid #ddd; border-radius: 6px;
+      font-size: 13px; min-width: 160px; background: #fafafa; cursor: pointer;
+    }
+    .fg select:focus { outline: none; border-color: #1a1a2e; }
+    .btn { padding: 7px 18px; background: #1a1a2e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+    .btn:hover { background: #2d2d4e; }
+
+    .stats { padding: 16px 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+    .stat { background: white; border-radius: 8px; padding: 14px 20px; min-width: 130px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    .stat .num { font-size: 30px; font-weight: 800; color: #1a1a2e; }
+    .stat .lbl { font-size: 11px; color: #999; margin-top: 2px; }
+
+    .container { padding: 0 32px 40px; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+    thead { background: #1a1a2e; color: white; }
+    th { padding: 11px 13px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+    td { padding: 10px 13px; font-size: 13px; border-bottom: 1px solid #f2f2f2; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbff; }
+
+    .pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-weight: 700; font-size: 12px; color: white; }
+    .s-high { background: #27ae60; }
+    .s-mid  { background: #e67e22; }
+    .s-low  { background: #e74c3c; }
+    .s-na   { background: #bbb; color: #555; }
+
+    .stab { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+    .stab-high   { background: #eafaf1; color: #1e8449; }
+    .stab-medium { background: #fef9e7; color: #b7950b; }
+    .stab-low    { background: #fdedec; color: #c0392b; }
+
+    .apply-btn {
+      padding: 5px 13px; border-radius: 5px; border: 2px solid #1a1a2e;
+      font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.15s;
+    }
+    .not-applied { background: white; color: #1a1a2e; }
+    .not-applied:hover { background: #1a1a2e; color: white; }
+    .applied { background: #27ae60; color: white; border-color: #27ae60; }
+
+    a { color: #0066cc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wlb-good { color: #27ae60; font-size: 12px; }
+    .wlb-none { color: #ccc; font-style: italic; font-size: 12px; }
+    .summary-text { font-size: 12px; color: #666; max-width: 220px; }
+
+    .loading { text-align: center; padding: 60px; color: #888; font-size: 15px; }
+    .error   { text-align: center; padding: 60px; color: #e74c3c; font-size: 14px; }
+    .empty   { text-align: center; padding: 40px; color: #999; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ Career-Ops Job Dashboard</h1>
+  <span id="last-updated">Loading...</span>
+</header>
+
+<div class="filters">
+  <div class="fg">
+    <label>Role</label>
+    <select id="f-role">
+      <option value="">All Roles</option>
+      <option value="data engineer">Data Engineer</option>
+      <option value="analytics engineer">Analytics Engineer</option>
+      <option value="data scientist">Data Scientist</option>
+      <option value="machine learning">Machine Learning</option>
+      <option value="cloud engineer">Cloud Engineer</option>
+      <option value="ai engineer">AI Engineer</option>
+      <option value="data analytics">Data Analytics</option>
+      <option value="business intelligence">Business Intelligence</option>
+      <option value="data platform">Data Platform</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Location</label>
+    <select id="f-location">
+      <option value="">All Locations</option>
+      <option value="united states" selected>United States</option>
+      <option value="india">India</option>
+      <option value="remote">Remote (Any)</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Min Score</label>
+    <select id="f-score">
+      <option value="0">Any Score</option>
+      <option value="50">50+</option>
+      <option value="65" selected>65+</option>
+      <option value="75">75+</option>
+      <option value="85">85+</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Status</label>
+    <select id="f-status">
+      <option value="">All</option>
+      <option value="applied">Applied</option>
+      <option value="not-applied">Not Applied</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>&nbsp;</label>
+    <button class="btn" onclick="loadData()">↻ Refresh</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="num" id="s-total">—</div><div class="lbl">Total Scored</div></div>
+  <div class="stat"><div class="num" id="s-high">—</div><div class="lbl">Score 75+</div></div>
+  <div class="stat"><div class="num" id="s-applied">—</div><div class="lbl">Applied</div></div>
+  <div class="stat"><div class="num" id="s-remote">—</div><div class="lbl">Fully Remote</div></div>
+  <div class="stat"><div class="num" id="s-showing">—</div><div class="lbl">Showing</div></div>
+</div>
+
+<div class="container">
+  <div id="table-wrap" class="loading">Loading jobs from BigQuery...</div>
+</div>
+
+<script>
+const API = 'https://career-ops-api-124633468669.us-central1.run.app/jobs';
+let allJobs = [];
+
+const getApplied = () => { try { return JSON.parse(localStorage.getItem('co-applied') || '{}'); } catch { return {}; } };
+const setApplied = (id, v) => { const a = getApplied(); v ? a[id] = true : delete a[id]; localStorage.setItem('co-applied', JSON.stringify(a)); };
+
+function scoreClass(s) {
+  if (s >= 75) return 's-high';
+  if (s >= 50) return 's-mid';
+  if (s > 0)   return 's-low';
+  return 's-na';
+}
+
+function stabilityHtml(s) {
+  const cls = s === 'high' ? 'stab-high' : s === 'low' ? 'stab-low' : 'stab-medium';
+  return `<span class="stab ${cls}">${s || 'med'}</span>`;
+}
+
+function wlbHtml(w) {
+  if (!w || w === 'none mentioned') return `<span class="wlb-none">none</span>`;
+  const short = w.length > 35 ? w.slice(0, 35) + '…' : w;
+  return `<span class="wlb-good" title="${w}">✓ ${short}</span>`;
+}
+
+function matchesLocation(job, filter) {
+  if (!filter) return true;
+  const loc = (job.location || '').toLowerCase();
+  if (filter === 'united states') return loc.includes('united states') || loc.includes('remote - us') || loc.includes('usa') || (loc.includes('remote') && !loc.includes('india') && !loc.includes('canada') && !loc.includes('uk') && !loc.includes('emea'));
+  if (filter === 'india')         return loc.includes('india');
+  if (filter === 'remote')        return loc.includes('remote');
+  return true;
+}
+
+function getFiltered() {
+  const role    = document.getElementById('f-role').value.toLowerCase();
+  const loc     = document.getElementById('f-location').value;
+  const minScore= parseInt(document.getElementById('f-score').value) || 0;
+  const status  = document.getElementById('f-status').value;
+  const applied = getApplied();
+
+  return allJobs.filter(j => {
+    const score = parseInt(j.score) || -1;
+    if (score < minScore) return false;
+    if (role && !(j.title || '').toLowerCase().includes(role)) return false;
+    if (!matchesLocation(j, loc)) return false;
+    if (status === 'applied'     && !applied[j.id]) return false;
+    if (status === 'not-applied' &&  applied[j.id]) return false;
+    return true;
+  }).sort((a, b) => (parseInt(b.score) || 0) - (parseInt(a.score) || 0));
+}
+
+function renderTable(jobs) {
+  const applied = getApplied();
+  document.getElementById('s-showing').textContent = jobs.length;
+
+  if (!jobs.length) {
+    document.getElementById('table-wrap').innerHTML = '<div class="empty">No jobs match the current filters.</div>';
+    return;
+  }
+
+  const rows = jobs.map(j => {
+    const score    = parseInt(j.score) || -1;
+    const isApplied = !!applied[j.id];
+    const scoreLabel = score > 0 ? score : '–';
+    const summary  = (j.summary && j.summary !== 'parse-error') ? j.summary : '';
+    const shortSum = summary.length > 90 ? summary.slice(0, 90) + '…' : summary;
+    const date     = j.fetched_at ? new Date(j.fetched_at.value || j.fetched_at).toLocaleDateString() : '';
+
+    return `<tr>
+      <td><strong>${j.company || '—'}</strong></td>
+      <td style="max-width:220px"><a href="${j.url || '#'}" target="_blank">${j.title || '—'}</a></td>
+      <td style="font-size:12px;max-width:130px">${j.location || '—'}</td>
+      <td><span class="pill ${scoreClass(score)}">${scoreLabel}</span></td>
+      <td>${stabilityHtml(j.stability)}</td>
+      <td>${wlbHtml(j.wlb_signals)}</td>
+      <td class="summary-text" title="${summary}">${shortSum || '—'}</td>
+      <td style="font-size:11px;color:#999">${date}</td>
+      <td>
+        <button class="apply-btn ${isApplied ? 'applied' : 'not-applied'}"
+          onclick="toggleApply('${j.id}', this)">
+          ${isApplied ? '✓ Applied' : 'Mark Applied'}
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('table-wrap').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th><th>Role</th><th>Location</th>
+          <th>Score</th><th>Stability</th><th>WLB Signals</th>
+          <th>Summary</th><th>Found</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function toggleApply(id, btn) {
+  const was = btn.classList.contains('applied');
+  setApplied(id, !was);
+  btn.classList.toggle('applied', !was);
+  btn.classList.toggle('not-applied', was);
+  btn.textContent = was ? 'Mark Applied' : '✓ Applied';
+  updateStats();
+}
+
+function updateStats() {
+  const applied = getApplied();
+  document.getElementById('s-total').textContent   = allJobs.filter(j => parseInt(j.score) > 0).length;
+  document.getElementById('s-high').textContent    = allJobs.filter(j => parseInt(j.score) >= 75).length;
+  document.getElementById('s-applied').textContent = Object.keys(applied).length;
+  document.getElementById('s-remote').textContent  = allJobs.filter(j => (j.remote || '').toLowerCase() === 'yes').length;
+}
+
+function applyFilters() { renderTable(getFiltered()); updateStats(); }
+
+['f-role','f-location','f-score','f-status'].forEach(id =>
+  document.getElementById(id).addEventListener('change', applyFilters)
+);
+
+async function loadData() {
+  document.getElementById('table-wrap').innerHTML = '<div class="loading">Loading jobs from BigQuery...</div>';
+  try {
+    const res = await fetch(API);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    allJobs = await res.json();
+    if (allJobs.error) throw new Error(allJobs.error);
+    document.getElementById('last-updated').textContent =
+      'Last refreshed: ' + new Date().toLocaleTimeString();
+    applyFilters();
+  } catch (err) {
+    document.getElementById('table-wrap').innerHTML =
+      `<div class="error">Could not load jobs: ${err.message}</div>`;
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
